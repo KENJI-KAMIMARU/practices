@@ -1,10 +1,59 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#07111b">
+<title>NEON ROOFTOPS — Perovskite Patrol</title>
+<style>
+:root{color-scheme:dark;--ink:#e9f4e9;--muted:#88a49e;--lime:#bbf76b;--cyan:#6fe8e4;--panel:#122029;--line:#31504d}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#172b36,#071119 65%);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;display:flex;justify-content:center;padding:20px 14px 26px}.cabinet{width:min(100%,900px)}header{display:flex;align-items:center;justify-content:space-between;margin:0 2px 12px}.title{margin:0;font-size:clamp(19px,4vw,28px);letter-spacing:.09em;color:#fff;text-shadow:3px 3px #1c645b}.title span{color:var(--lime)}.edition{font-size:10px;letter-spacing:.16em;color:var(--cyan)}.hud{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}.stat,.co2box{background:linear-gradient(135deg,#13252c,#0c1921);border:1px solid var(--line);padding:9px 13px;box-shadow:inset 0 0 15px #132c30}.label{font-size:9px;letter-spacing:.2em;color:var(--muted)}.value{margin-top:3px;font-size:clamp(17px,4vw,23px);font-weight:800;color:var(--lime)}.co2box{margin-bottom:8px;padding:9px 13px}.co2head{display:flex;justify-content:space-between;align-items:center}.co2value{font-weight:bold;font-size:16px;color:#ffe078}.bar{height:12px;margin-top:7px;background:#263237;border:1px solid #49605c;overflow:hidden}.fill{height:100%;width:50%;background:linear-gradient(90deg,#74e89e 0%,#d6e962 53%,#ff825f 100%);transition:width .2s}.help{font-size:11px;color:#a8bfba;margin:0 2px 9px;line-height:1.6}.board{position:relative;background:#03090d;border:2px solid #53736a;padding:7px;box-shadow:0 0 28px #315c4b40,inset 0 0 20px #0a171a}.canvas-wrap{width:100%;overflow:hidden}canvas{display:block;width:100%;height:auto;image-rendering:pixelated;touch-action:none}.overlay{position:absolute;inset:7px;background:#061014dd;display:grid;place-items:center;text-align:center;padding:20px}.overlay.hidden{display:none}.dialog{max-width:470px}.dialog h2{margin:0 0 9px;color:var(--lime);font-size:clamp(25px,6vw,40px);letter-spacing:.1em;text-shadow:3px 3px #286451}.dialog p{margin:0 0 18px;color:#c5d7ce;line-height:1.8;font-size:13px}.action{border:1px solid #dfff92;background:var(--lime);color:#112019;font:900 13px inherit;letter-spacing:.13em;padding:12px 24px;cursor:pointer;box-shadow:4px 4px #4b7553}.action:hover{filter:brightness(1.1);transform:translate(-1px,-1px)}.touch{display:none;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,43px);gap:5px;justify-content:center;margin:11px auto 0}.touch button{background:#14262b;border:1px solid #55736d;color:#efffe1;border-radius:4px;font-size:20px;touch-action:none}.touch button:active{background:#3b6557}.touch .up{grid-column:2}.touch .left{grid-column:1;grid-row:2}.touch .down{grid-column:2;grid-row:2}.touch .right{grid-column:3;grid-row:2}.footer{text-align:center;font-size:9px;letter-spacing:.17em;color:#66827c;margin-top:11px}@media(max-width:560px){body{padding:12px 8px 20px}.touch{display:grid}.edition{font-size:8px}.hud{gap:5px}.stat{padding:8px}.help{font-size:10px}}
+</style>
 </head>
 <body>
-  <h1>ここは入り口（トップページ）です！</h1>
-  <a href="/test-fol/">奥の部屋（test-fol）へ進む</a>
+<main class="cabinet">
+<header><h1 class="title">NEON <span>ROOFTOPS</span></h1><div class="edition">PEROVSKITE PATROL · 198X</div></header>
+<section class="hud" aria-label="Game status"><div class="stat"><div class="label">SCORE</div><div class="value" id="score">000000</div></div><div class="stat"><div class="label">PANEL INSTALLED</div><div class="value" id="progress">0%</div></div><div class="stat"><div class="label">BUILDINGS</div><div class="value" id="buildingCount">03</div></div></section>
+<section class="co2box"><div class="co2head"><div class="label">CO₂ LEVEL</div><div class="co2value" id="co2Text">50%</div></div><div class="bar" role="progressbar" aria-label="CO2 level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><div class="fill" id="co2Fill"></div></div></section>
+<p class="help">矢印キー / WASD でビルの壁を移動。通ったスペースにパネルが自動設置されます。鳥に注意！</p>
+<section class="board"><div class="canvas-wrap"><canvas id="game" aria-label="太陽光パネル設置アクションゲーム"></canvas></div><div class="overlay" id="overlay"><div class="dialog"><h2 id="messageTitle">SOLAR SHIFT</h2><p id="message">ビルの壁を駆け上がり、すべての窓にペロブスカイトパネルを設置しよう。<br>鳥や荒天をかわして、CO₂が上がりきる前に街を救え！</p><button class="action" id="start">PRESS TO START</button></div></div></section>
+<div class="touch" aria-label="Touch controls"><button class="up" data-dir="up" aria-label="上">▲</button><button class="left" data-dir="left" aria-label="左">◀</button><button class="down" data-dir="down" aria-label="下">▼</button><button class="right" data-dir="right" aria-label="右">▶</button></div>
+<div class="footer">CLIMB HIGH · POWER TOMORROW · KEEP CO₂ DOWN</div>
+</main>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),W=840,H=500;
+canvas.width=W;canvas.height=H;
+const scoreEl=document.getElementById('score'),progressEl=document.getElementById('progress'),co2Text=document.getElementById('co2Text'),co2Fill=document.getElementById('co2Fill'),co2Bar=document.querySelector('.bar'),overlay=document.getElementById('overlay'),titleEl=document.getElementById('messageTitle'),messageEl=document.getElementById('message'),startBtn=document.getElementById('start');
+const buildings=[{x:84,w:190,rows:7,cols:5},{x:326,w:190,rows:7,cols:5},{x:568,w:190,rows:7,cols:5}],cell=30,top=132;
+const dirs={left:{x:-1,y:0},right:{x:1,y:0},up:{x:0,y:-1},down:{x:0,y:1}};
+let panels,player,birds,score,co2,elapsed,stormTimer,storm,stormLeft,playing,lastTime,anim,desired,flash;
+const total=buildings.reduce((n,b)=>n+b.rows*b.cols,0);
+function fresh(){panels=buildings.map(b=>Array.from({length:b.rows},()=>Array(b.cols).fill(false)));player={b:0,c:0,r:6,step:0,dir:'right',invuln:0};birds=[];score=0;co2=50;elapsed=0;stormTimer=12;storm=false;stormLeft=0;anim=0;desired='right';flash=0;paintHud();draw();}
+function paintHud(){let n=panels.flat(2).filter(Boolean).length;scoreEl.textContent=String(score).padStart(6,'0');progressEl.textContent=Math.floor(n/total*100)+'%';co2Text.textContent=Math.ceil(co2)+'%';co2Fill.style.width=Math.min(100,co2)+'%';co2Bar.setAttribute('aria-valuenow',String(Math.ceil(co2)));}
+function cellPos(b,c,r){const x=buildings[b].x+(buildings[b].w-buildings[b].cols*cell)/2+c*cell;return{x,y:top+r*cell};}
+function nextCell(dir){let b=player.b,c=player.c,r=player.r,d=dirs[dir];c+=d.x;r+=d.y;if(c<0||c>=buildings[b].cols){let nb=b+(c<0?-1:1);if(nb<0||nb>=buildings.length)return null;b=nb;c=c<0?buildings[b].cols-1:0;}if(r<0||r>=buildings[b].rows)return null;return{b,c,r};}
+function move(){const step=nextCell(desired);if(!step)return;player.b=step.b;player.c=step.c;player.r=step.r;player.dir=desired;if(!panels[step.b][step.r][step.c]){panels[step.b][step.r][step.c]=true;score+=100;co2=Math.max(0,co2-1.25);paintHud();if(panels.flat(2).every(Boolean)){finish(true);return;}}}
+function spawnBird(){let fromLeft=Math.random()<.5;birds.push({x:fromLeft?-30:W+30,y:top+40+Math.random()*180,vx:fromLeft?135:-135,hit:false});}
+function stormStart(){storm=true;stormLeft=3.3;flash=.4;let done=0;for(let b=0;b<panels.length;b++)for(let r=0;r<panels[b].length;r++)for(let c=0;c<panels[b][r].length;c++)if(panels[b][r][c]&&Math.random()<.15){panels[b][r][c]=false;done++;}if(done)score=Math.max(0,score-done*35);paintHud();}
+function collide(){for(const bird of birds){if(bird.hit)continue;const p=cellPos(player.b,player.c,player.r);if(Math.abs(bird.x-(p.x+cell/2))<19&&Math.abs(bird.y-(p.y+cell/2))<20&&player.invuln<=0){bird.hit=true;player.r=Math.min(6,player.r+1);player.invuln=1.4;flash=.35;}}}
+function update(dt){elapsed+=dt;co2+=dt*1.45;if(co2>=100){co2=100;paintHud();finish(false);return;}stormTimer-=dt;if(stormTimer<=0&&!storm){stormStart();stormTimer=17+Math.random()*8;}if(storm){stormLeft-=dt;if(stormLeft<=0)storm=false;}player.invuln=Math.max(0,player.invuln-dt);flash=Math.max(0,flash-dt);if(Math.random()<dt*.32)spawnBird();for(const b of birds)b.x+=b.vx*dt;birds=birds.filter(b=>b.x>-50&&b.x<W+50);collide();player.step+=dt;if(player.step>=.17){player.step=0;move();} }
+function draw(){ctx.fillStyle='#050d13';ctx.fillRect(0,0,W,H);
+// night sky and distant city
+for(let i=0;i<55;i++){let x=(i*149+31)%W,y=(i*71+18)%112;ctx.fillStyle=i%4?'#b7d5bd':'#e8ed9a';ctx.fillRect(x,y,2,2);}ctx.fillStyle='#0b1920';for(let i=0;i<18;i++){let x=i*51-10,h=35+(i*37%58);ctx.fillRect(x,top-h,42,h);for(let yy=top-h+8;yy<top-3;yy+=13)for(let xx=x+7;xx<x+39;xx+=12){ctx.fillStyle=(i+yy+xx)%3?'#263b3c':'#947d48';ctx.fillRect(xx,yy,4,5);}}
+// buildings
+buildings.forEach((b,bi)=>{const bx=b.x,by=top-13,bw=b.w,bh=b.rows*cell+32;ctx.fillStyle='#34434a';ctx.fillRect(bx-10,by,bw+20,bh);ctx.fillStyle='#53605e';ctx.fillRect(bx-10,by,bw+20,8);ctx.fillStyle='#27363b';ctx.fillRect(bx-4,by+8,bw+8,bh-8);ctx.fillStyle='#899386';ctx.fillRect(bx-10,by+bh,bw+20,9);for(let r=0;r<b.rows;r++)for(let c=0;c<b.cols;c++){const p=cellPos(bi,c,r),on=panels[bi][r][c];ctx.fillStyle=on?'#67d59b':'#18272d';ctx.fillRect(p.x+2,p.y+2,cell-4,cell-4);if(on){ctx.fillStyle='#b5ffe0';ctx.fillRect(p.x+5,p.y+5,cell-10,2);ctx.fillStyle='#287b80';ctx.fillRect(p.x+5,p.y+10,cell-10,2);ctx.fillStyle='#42b9b0';ctx.fillRect(p.x+5,p.y+15,cell-10,2);ctx.fillStyle='#c5f47a';ctx.fillRect(p.x+5,p.y+20,3,3);}else{ctx.fillStyle='#7f9b9a';ctx.fillRect(p.x+4,p.y+4,cell-8,2);ctx.fillStyle='#31474b';ctx.fillRect(p.x+4,p.y+8,cell-8,cell-12);}}});
+// rooftop skyline accent and walkway connectors
+ctx.fillStyle='#c1c979';ctx.fillRect(44,top+7*cell+42,W-88,3);
+birds.forEach(b=>{ctx.fillStyle='#d9e98e';ctx.fillRect(b.x-9,b.y,18,4);ctx.fillRect(b.x-5,b.y-4,5,4);ctx.fillRect(b.x+2,b.y-5,5,5);ctx.fillStyle='#18252a';ctx.fillRect(b.x-2,b.y+1,4,2);});
+if(player){const p=cellPos(player.b,player.c,player.r),x=p.x+15,y=p.y+15;ctx.save();if(player.invuln>0&&Math.floor(anim*14)%2)ctx.globalAlpha=.35;ctx.fillStyle='#ffce6d';ctx.fillRect(x-7,y-7,14,12);ctx.fillStyle='#ef835c';ctx.fillRect(x-8,y+4,16,6);ctx.fillStyle='#eaf6c5';ctx.fillRect(x-4,y-13,9,8);ctx.fillStyle='#273840';ctx.fillRect(x+1,y-10,4,2);ctx.fillStyle='#68dce0';ctx.fillRect(x-9,y+8,6,3);ctx.fillRect(x+3,y+8,6,3);ctx.restore();}
+// weather pixels and scanlines
+if(storm){ctx.fillStyle='#90d9df16';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#8bd9e0';ctx.globalAlpha=.58;ctx.lineWidth=1;for(let i=0;i<55;i++){let x=(i*83+anim*180)%W,y=(i*47+anim*280)%H;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7,y+15);ctx.stroke();}ctx.globalAlpha=1;ctx.fillStyle='#d3f0e5';ctx.font='bold 12px monospace';ctx.fillText('WIND / RAIN — PANELS AT RISK',18,25);}if(flash>0){ctx.fillStyle='#efffa022';ctx.fillRect(0,0,W,H);}ctx.fillStyle='#ffffff08';for(let y=0;y<H;y+=4)ctx.fillRect(0,y,W,1);
+}
+function frame(now){if(!playing)return;const dt=Math.min(.05,(now-lastTime)/1000);lastTime=now;anim+=dt;update(dt);draw();if(playing)requestAnimationFrame(frame);}
+function finish(win){playing=false;overlay.classList.remove('hidden');titleEl.textContent=win?'CITY POWERED!':'CO₂ CRITICAL';titleEl.style.color=win?'#c5fa78':'#ff8873';messageEl.innerHTML=win?'すべての窓にパネルを設置！街の未来を守った！':'CO₂が限界に到達。街の温度が上がりきってしまった…';messageEl.innerHTML+='<br><br>SCORE　'+String(score).padStart(6,'0')+'　／　設置 '+progressEl.textContent;startBtn.textContent='PLAY AGAIN';}
+function start(){fresh();playing=true;overlay.classList.add('hidden');lastTime=performance.now();requestAnimationFrame(frame);}
+const keys={ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right',ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down'};document.addEventListener('keydown',e=>{if(keys[e.key]){e.preventDefault();desired=keys[e.key];if(!playing&&(e.key==='Enter'))start();}else if((e.key===' '||e.key==='Enter')&&!playing){e.preventDefault();start();}});document.querySelectorAll('.touch button').forEach(btn=>{btn.addEventListener('pointerdown',e=>{e.preventDefault();desired=btn.dataset.dir;});});startBtn.addEventListener('click',start);fresh();
+})();
+</script>
 </body>
 </html>
